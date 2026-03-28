@@ -3,11 +3,11 @@ import "dotenv/config";
 
 async function setupDatabase() {
   try {
-    // 1. Kết nối đến MySQL (KHÔNG TRUYỀN DATABASE NAME vào đây vì nó chưa tồn tại)
+    // 1. Kết nối đến MySQL 
     const connection = await mysql.createConnection({
       host: process.env.DB_HOST || "localhost",
-      user: process.env.DB_USER || "root", // Nhắc người clone điền đúng user của họ vào .env
-      password: process.env.DB_PASS || "",
+      user: process.env.DB_USER || "", // Điền tên user
+      password: process.env.DB_PASS || "", // Điền password
     });
 
     console.log("⏳ Đang kết nối MySQL...");
@@ -36,7 +36,7 @@ async function setupDatabase() {
     await connection.query(createUsersTable);
     console.log("✅ Đã tạo bảng 'users' thành công!");
 
-    // Thêm các câu lệnh CREATE TABLE khác ở đây (ví dụ: bảng jobs, companies...)
+    // Thêm các câu lệnh CREATE TABLE khác ở đây 
 
     console.log("🎉 KHỞI TẠO CƠ SỞ DỮ LIỆU HOÀN TẤT!");
     await connection.end(); // Đóng kết nối
