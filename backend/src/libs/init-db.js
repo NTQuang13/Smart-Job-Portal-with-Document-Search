@@ -1,0 +1,50 @@
+import mysql from "mysql2/promise";
+import "dotenv/config";
+import { createUserTable } from "../models/User.js";
+// Import các bảng khác ở đây...
+
+async function setupDatabase() {
+  let connection;
+  try {
+    console.log("⏳ Đang kết nối MySQL để khởi tạo...");
+
+    // 1. Tạo kết nối KHÔNG KHAI BÁO DATABASE NAME
+    connection = await mysql.createConnection({
+      host: process.env.DB_HOST || "localhost",
+      user: process.env.DB_USER || "ntquang",
+      password: process.env.DB_PASS || "ntquang13@",
+    });
+
+    const dbName = process.env.DB_NAME || "job_portal";
+
+    // 2. Chạy lệnh tạo Database trước
+    await connection.query(
+      `CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`,
+    );
+    console.log(`✅ Đã tạo hoặc tìm thấy Database: '${dbName}'`);
+
+    // 3. Bắt buộc phải chọn Database vừa tạo để làm việc
+    await connection.query(`USE \`${dbName}\``);
+    console.log(`✅ Đã chọn Database: '${dbName}'`);
+
+    console.log("⏳ Đang khởi tạo các bảng...");
+
+    // 4. Truyền biến connection này vào các hàm tạo bảng
+    // Biến connection này hoàn toàn có method .query() y hệt như biến pool
+    await createUserTable(connection);
+    // await createCompanyTable(connection);
+
+    console.log("🎉 KHỞI TẠO CƠ SỞ DỮ LIỆU HOÀN TẤT!");
+    process.exit(0);
+  } catch (error) {
+    console.error("❌ Lỗi khi khởi tạo Database:", error);
+    process.exit(1);
+  } finally {
+    // Luôn nhớ đóng kết nối khi xong việc
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+
+setupDatabase();
