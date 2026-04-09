@@ -13,3 +13,5 @@ Tạo terminal mới, gõ lệnh node .\src\workers\cvWorker.js để khởi đ�
 Tạo terminal mới, vào thư mục frontend gõ lệnh npm install để cài đặt các thư viện cần thiết
 
 Gõ npm run dev để khởi động frontend.
+
+Cài đặt extension OpenAPI (Swagger) Editor sau đó dùng file swagger.yaml để test API
