@@ -1,0 +1,393 @@
+openapi: 3.0.4
+info:
+  title: Smart Job Portal API
+  description: Hệ thống API cho nền tảng tuyển dụng thông minh (Tích hợp JWT, Multer, BullMQ)
+  version: 1.0.12
+servers:
+  - url: http://localhost:3000/api
+
+# ==========================================
+# CẤU HÌNH BẢO MẬT (NÚT AUTHORIZE)
+# ==========================================
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: [] # Mặc định yêu cầu token cho toàn bộ, sẽ ghi đè ở các route public
+
+# ==========================================
+# DANH SÁCH ENDPOINTS
+# ==========================================
+paths:
+  # --- MODULE: AUTH ---
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: Đăng ký tài khoản
+      security: [] # Public API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [candidate, recruiter]
+                  default: candidate
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request (Email tồn tại)
+
+  /auth/signin:
+    post:
+      tags:
+        - Auth
+      summary: Đăng nhập
+      security: [] # Public API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: OK (Trả về accessToken và refreshToken)
+        "401":
+          description: Unauthorized (Sai email/password)
+
+  /auth/refresh-token:
+    post:
+      tags:
+        - Auth
+      summary: Cấp lại Access Token mới
+      security: [] # Không dùng header Bearer, chỉ cần body
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "403":
+          description: Forbidden (Refresh Token hết hạn)
+
+  /auth/signout:
+    post:
+      tags:
+        - Auth
+      summary: Đăng xuất
+      responses:
+        "200":
+          description: Đăng xuất thành công
+
+  # --- MODULE: USERS ---
+  /users/me:
+    get:
+      tags:
+        - Users
+      summary: Lấy thông tin tài khoản đang đăng nhập
+      responses:
+        "200":
+          description: OK
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Lấy thông tin user bất kỳ theo ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+
+  # --- MODULE: COMPANIES ---
+  /companies:
+    get:
+      tags:
+        - Companies
+      summary: Lấy danh sách công ty (Public)
+      security: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: OK
+    post:
+      tags:
+        - Companies
+      summary: Tạo công ty mới (Chỉ Recruiter)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, description]
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                website:
+                  type: string
+      responses:
+        "201":
+          description: Created
+        "403":
+          description: Forbidden (Không phải Recruiter)
+
+  # --- MODULE: JOBS ---
+  /jobs:
+    get:
+      tags:
+        - Jobs
+      summary: Lấy danh sách công việc (Public)
+      security: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: OK
+    post:
+      tags:
+        - Jobs
+      summary: Đăng tin tuyển dụng (Chỉ Recruiter)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, description, companyId]
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                requirements:
+                  type: string
+                salaryMin:
+                  type: integer
+                salaryMax:
+                  type: integer
+                location:
+                  type: string
+                jobType:
+                  type: string
+                experienceLevel:
+                  type: string
+                companyId:
+                  type: string
+      responses:
+        "201":
+          description: Created
+
+  /jobs/{id}:
+    get:
+      tags:
+        - Jobs
+      summary: Xem chi tiết công việc (Public)
+      security: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+    put:
+      tags:
+        - Jobs
+      summary: Cập nhật công việc (Chỉ người tạo)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                salaryMin:
+                  type: integer
+      responses:
+        "200":
+          description: OK
+        "403":
+          description: Forbidden
+    delete:
+      tags:
+        - Jobs
+      summary: Xóa công việc (Chỉ người tạo)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "403":
+          description: Forbidden
+
+  # --- MODULE: CVS ---
+  /cvs/upload:
+    post:
+      tags:
+        - CVs
+      summary: Tải lên CV (Tự động trích xuất Text)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Created (Đang đưa vào Queue)
+
+  /cvs:
+    get:
+      tags:
+        - CVs
+      summary: Lấy danh sách CV của bản thân
+      responses:
+        "200":
+          description: OK
+
+  # --- MODULE: APPLICATIONS ---
+  /applications:
+    post:
+      tags:
+        - Applications
+      summary: Ứng tuyển vào công việc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [jobId, cvId]
+              properties:
+                jobId:
+                  type: string
+                cvId:
+                  type: string
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Already Applied
+    get:
+      tags:
+        - Applications
+      summary: Lấy danh sách ứng tuyển (Tự động nhận diện Role)
+      responses:
+        "200":
+          description: OK
+
+  # --- MODULE: BOOKMARKS ---
+  /bookmarks:
+    post:
+      tags:
+        - Bookmarks
+      summary: Lưu công việc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [jobId]
+              properties:
+                jobId:
+                  type: string
+      responses:
+        "201":
+          description: Created
+    get:
+      tags:
+        - Bookmarks
+      summary: Lấy danh sách việc đã lưu
+      responses:
+        "200":
+          description: OK
+
+  /bookmarks/{jobId}:
+    delete:
+      tags:
+        - Bookmarks
+      summary: Bỏ lưu công việc
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
