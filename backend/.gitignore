@@ -1,0 +1,9 @@
+# Bỏ qua thư mục thư viện
+node_modules/
+
+# Bỏ qua file chứa thông tin bảo mật
+.env
+
+# Bỏ qua các file log hoặc cấu hình hệ thống (nếu có)
+npm-debug.log
+.DS_Store
