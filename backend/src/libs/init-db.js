@@ -3,6 +3,10 @@ import "dotenv/config";
 import { createUserTable } from "../models/User.js";
 import { createCompanyTable } from "../models/Company.js";
 import { createJobTable } from "../models/Job.js";
+import { createCVTable } from "../models/CV.js";
+import { createCVExtractedTable } from "../models/CVExtracted.js";
+import { createApplicationTable } from "../models/Application.js";
+import { createBookmarkTable } from "../models/Bookmark.js";
 
 async function setupDatabase() {
   let connection;
@@ -35,6 +39,10 @@ async function setupDatabase() {
     await createUserTable(connection);
     await createCompanyTable(connection);
     await createJobTable(connection);
+    await createCVTable(connection);
+    await createCVExtractedTable(connection);
+    await createApplicationTable(connection);
+    await createBookmarkTable(connection);
 
     console.log("🎉 KHỞI TẠO CƠ SỞ DỮ LIỆU HOÀN TẤT!");
     process.exit(0);

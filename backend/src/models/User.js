@@ -5,6 +5,7 @@ export const createUserTable = async (db) => {
       name VARCHAR(255) NOT NULL,
       email VARCHAR(255) NOT NULL UNIQUE,
       password VARCHAR(255) NOT NULL,
+      refreshToken VARCHAR(255) DEFAULT NULL,
       role ENUM('candidate', 'recruiter') NOT NULL DEFAULT 'candidate',
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );

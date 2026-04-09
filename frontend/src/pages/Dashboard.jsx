@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+// 🟢 IMPORT cái file bạn vừa tạo (nhớ kiểm tra đúng đường dẫn thư mục utils nhé)
+import axiosClient from "../utils/axiosClient";
 
 import "./Dashboard.css";
 import logo from "../assets/logo.png";
@@ -17,15 +18,14 @@ function Dashboard() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:3000/api/users/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        // 🟢 CỰC KỲ GỌN NHẸ: Không cần truyền token vào header nữa!
+        // axiosClient sẽ lo hết (cả việc đính kèm token lẫn tự động lấy token mới nếu hết hạn).
+        const res = await axiosClient.get("/users/me");
         setUser(res.data.user || res.data);
       } catch (err) {
-        console.log(err);
+        console.error("Không thể tải thông tin user:", err);
+        // Nếu axiosClient thất bại hoàn toàn (cả Refresh token cũng chết),
+        // nó sẽ tự đá user ra trang đăng nhập (đã code trong file utils/axiosClient.js).
       }
     };
     fetchUser();
@@ -33,6 +33,21 @@ function Dashboard() {
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  // 🟢 Hàm xử lý đăng xuất an toàn
+  const handleLogout = async () => {
+    try {
+      // Gọi API logout để backend biết (tuỳ chọn nhưng nên có)
+      await axiosClient.post("/auth/signout");
+    } catch (error) {
+      console.log("Lỗi khi báo đăng xuất cho server", error);
+    } finally {
+      // Dù server báo lỗi hay thành công, thì Frontend vẫn phải xoá CHÌA KHOÁ đi.
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      navigate("/");
+    }
   };
 
   return (
@@ -116,12 +131,10 @@ function Dashboard() {
                 </div>
 
                 <div className="profile-footer">
+                  {/* 🟢 GỌI HÀM LOGOUT Ở ĐÂY */}
                   <button
                     className="btn-danger popup-btn logout-btn"
-                    onClick={() => {
-                      localStorage.removeItem("token");
-                      navigate("/");
-                    }}
+                    onClick={handleLogout}
                   >
                     Đăng xuất
                   </button>

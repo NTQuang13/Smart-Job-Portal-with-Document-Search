@@ -21,24 +21,32 @@ function Auth() {
 
     try {
       if (isSignIn) {
+        // --- ĐĂNG NHẬP ---
         const res = await axios.post("http://localhost:3000/api/auth/signin", {
           email,
           password,
         });
-        localStorage.setItem("token", res.data.token);
+
+        console.log("Dữ liệu signin trả về:", res.data); // Log ra để kiểm tra
+
+        localStorage.setItem("accessToken", res.data.accessToken);
+        localStorage.setItem("refreshToken", res.data.refreshToken);
         navigate("/dashboard");
       } else {
+        // --- ĐĂNG KÝ ---
         if (password !== confirmPassword) {
           alert("Mật khẩu xác nhận không khớp!");
           return;
         }
 
-        await axios.post("http://localhost:3000/api/auth/signup", {
+        const res = await axios.post("http://localhost:3000/api/auth/signup", {
           name,
           email,
           password,
           role,
         });
+
+        console.log("Dữ liệu signup trả về:", res.data); // Log ra để kiểm tra
 
         alert("Đăng ký thành công! 🎉");
         setIsSignIn(true);
@@ -49,10 +57,25 @@ function Auth() {
         setRole("candidate");
       }
     } catch (err) {
+      // BẮT LỖI CHI TIẾT HƠN TẠI ĐÂY
+      console.error("Lỗi toàn bộ obj:", err);
+
       if (err.response) {
-        alert(err.response.data.message);
+        // Lỗi do server trả về (VD: 400, 401, 500)
+        console.error("Chi tiết data lỗi từ server:", err.response.data);
+
+        // Cố gắng lấy message, nếu không có thì in ra dạng JSON
+        const errorMessage =
+          err.response.data.message || JSON.stringify(err.response.data);
+        alert(`Lỗi từ Server: ${errorMessage}`);
+      } else if (err.request) {
+        // Lỗi không kết nối được tới server (Có thể do sai Port hoặc lỗi CORS)
+        alert(
+          "Lỗi kết nối: Không thể gọi tới Server. Hãy kiểm tra xem Server đã chạy chưa và có đúng cổng 3000 không.",
+        );
       } else {
-        alert("Lỗi máy chủ!");
+        // Lỗi do code React
+        alert(`Lỗi React: ${err.message}`);
       }
     }
   };
@@ -185,7 +208,7 @@ function Auth() {
 
 export default Auth;
 
-// --- STYLES ---
+// --- STYLES (Giữ nguyên không thay đổi) ---
 
 const styles = {
   pageBackground: {
@@ -202,7 +225,6 @@ const styles = {
     display: "flex",
     width: "900px",
     minWidth: "900px",
-    // maxWidth: "100%",
     maxWidth: "900px",
     minHeight: "550px",
     height: "auto",
@@ -212,7 +234,6 @@ const styles = {
     overflow: "hidden",
   },
   left: {
-    // flex: 1,
     width: "50%",
     padding: "40px",
     display: "flex",
@@ -229,8 +250,6 @@ const styles = {
     textAlign: "center",
     marginBottom: "25px",
   },
-
-  // --- CSS LOGO + TEXT ---
   brandContainer: {
     display: "flex",
     flexDirection: "column",
@@ -248,17 +267,16 @@ const styles = {
   brandText: {
     marginTop: "0px",
     fontSize: "32px",
-    fontWeight: "900", // Chữ siêu đậm (Extra Bold)
+    fontWeight: "900",
     fontFamily: "'Arial Black', 'Impact', 'Inter', sans-serif",
-    letterSpacing: "-1.5px", // Ép các chữ sát vào nhau
+    letterSpacing: "-1.5px",
   },
   textJob: {
-    color: "#1a6bf2", // Màu xanh dương đậm cho chữ "job"
+    color: "#1a6bf2",
   },
   textMinds: {
-    color: "#b5d1fe", // Màu xanh dương nhạt cho chữ "minds"
+    color: "#b5d1fe",
   },
-
   title: {
     fontSize: "22px",
     fontWeight: "700",
@@ -330,7 +348,6 @@ const styles = {
     textDecoration: "underline",
   },
   right: {
-    // flex: 1,
     width: "50%",
     backgroundColor: "#eff0fa",
     display: "flex",

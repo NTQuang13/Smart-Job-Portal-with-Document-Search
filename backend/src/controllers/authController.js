@@ -4,6 +4,25 @@ import { v4 as uuidv4 } from "uuid";
 import pool from "../libs/db.js";
 
 const SECRET_KEY = process.env.JWT_SECRET || "fallback_secret_key";
+const REFRESH_SECRET_KEY =
+  process.env.JWT_REFRESH_SECRET || "fallback_refresh_secret_key";
+
+// --- HÀM PHỤ TRỢ: Tạo bộ đôi Token ---
+const generateTokens = (user) => {
+  const accessToken = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    SECRET_KEY,
+    { expiresIn: "15m" }, // Access Token sống ngắn (15 phút)
+  );
+
+  const refreshToken = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    REFRESH_SECRET_KEY,
+    { expiresIn: "7d" }, // Refresh Token sống dài (7 ngày)
+  );
+
+  return { accessToken, refreshToken };
+};
 
 export const signup = async (req, res) => {
   try {
@@ -35,13 +54,13 @@ export const signup = async (req, res) => {
       [userId, name, email, hashedPassword, userRole],
     );
 
-    const token = jwt.sign({ id: userId, email, role: userRole }, SECRET_KEY, {
-      expiresIn: "1h",
-    });
+    const userPayload = { id: userId, email, role: userRole };
+    const tokens = generateTokens(userPayload);
 
-    res
-      .status(201)
-      .json({ user: { id: userId, name, email, role: userRole }, token });
+    res.status(201).json({
+      user: { id: userId, name, email, role: userRole },
+      ...tokens,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -69,12 +88,46 @@ export const signin = async (req, res) => {
       return res.status(401).json({ message: "Sai email/password" });
     }
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      SECRET_KEY,
-      { expiresIn: "1h" },
-    );
-    res.json({ token });
+    const userPayload = { id: user.id, email: user.email, role: user.role };
+    const tokens = generateTokens(userPayload);
+
+    res.json({ ...tokens });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// REFRESH TOKEN (Cấp lại Access Token mới)
+export const requestRefreshToken = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: "Không tìm thấy Refresh Token" });
+    }
+
+    // Xác thực Refresh Token
+    jwt.verify(refreshToken, REFRESH_SECRET_KEY, (err, decoded) => {
+      if (err) {
+        return res.status(403).json({
+          message:
+            "Refresh Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.",
+        });
+      }
+
+      // Nếu hợp lệ, cấp phát Access Token mới
+      const userPayload = {
+        id: decoded.id,
+        email: decoded.email,
+        role: decoded.role,
+      };
+      const newAccessToken = jwt.sign(userPayload, SECRET_KEY, {
+        expiresIn: "15m",
+      });
+
+      res.status(200).json({ accessToken: newAccessToken });
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -83,8 +136,9 @@ export const signin = async (req, res) => {
 
 export const signout = (req, res) => {
   try {
+    // Nếu có lưu refreshToken trong DB, bạn sẽ viết query xóa nó ở đây
     res.status(200).json({
-      message: "Đăng xuất thành công. Vui lòng xoá token ở phía Client.",
+      message: "Đăng xuất thành công. Frontend vui lòng xóa cả 2 token.",
     });
   } catch (error) {
     console.error(error);
