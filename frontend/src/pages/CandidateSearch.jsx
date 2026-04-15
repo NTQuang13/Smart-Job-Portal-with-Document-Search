@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axiosClient from "../utils/axiosClient";
 import axios from "axios";
 import "./Dashboard.css";
 import logo from "../assets/logo.png";
@@ -22,13 +23,10 @@ function CandidateSearch() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:3000/api/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axiosClient.get("/users/me");
         setUser(res.data.user || res.data);
       } catch (err) {
-        console.log(err);
+        console.error("Không thể tải thông tin user:", err);
       }
     };
     fetchUser();
@@ -116,12 +114,14 @@ function CandidateSearch() {
                   </svg>
                   Quản lý tài khoản
                 </div>
-                <div className="profile-footer">
-                  <button className="btn-danger popup-btn logout-btn" onClick={() => { localStorage.removeItem("token"); navigate("/"); }}>
-                    Đăng xuất
-                  </button>
+                <button className="btn-danger popup-btn logout-btn" onClick={() => { 
+                  localStorage.removeItem("accessToken"); 
+                  localStorage.removeItem("refreshToken"); 
+                  navigate("/"); 
+                }}>
+                  Đăng xuất
+                </button>
                 </div>
-              </div>
             )}
           </div>
         </div>
