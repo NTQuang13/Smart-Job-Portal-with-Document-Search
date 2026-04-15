@@ -143,7 +143,7 @@ function CandidateSearch() {
           <div className="search-form">
             <input
               type="text"
-              placeholder="Kỹ năng (ví dụ: React, Python...)"
+              placeholder="Kỹ năng (ví dụ: Lập trình, Tin học văn phòng, Python...)"
               className="search-input"
               value={skill}
               onChange={(e) => setSkill(e.target.value)}
