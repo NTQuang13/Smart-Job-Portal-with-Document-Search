@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import CandidateSearch from "./pages/CandidateSearch";
+import JobSearch from "./pages/JobSearch";
 
 // ==========================================
 // 1. TRẠM GÁC BẢO MẬT (Cho các trang cần đăng nhập)
@@ -48,6 +50,24 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+        path="/candidates"
+        element={
+          <ProtectedRoute>
+            <CandidateSearch />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/jobs"
+        element={
+          <ProtectedRoute>
+            <JobSearch />
+          </ProtectedRoute>
+        }
+      />
+        
       </Routes>
     </BrowserRouter>
   );
