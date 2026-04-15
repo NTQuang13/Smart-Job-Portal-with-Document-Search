@@ -166,14 +166,14 @@ function JobSearch() {
           <div className="search-form">
             <input
               type="text"
-              placeholder="Kỹ năng (ví dụ: React, Java...)"
+              placeholder="Kỹ năng (ví dụ: Lập trình, Tin học văn phòng, Python...)"
               className="search-input"
               value={skill}
               onChange={(e) => setSkill(e.target.value)}
             />
             <input
               type="text"
-              placeholder="Địa điểm (ví dụ: Hà Nội, HCM...)"
+              placeholder="Địa điểm (ví dụ: Hà Nội, Đà Nẵng...)"
               className="search-input"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
