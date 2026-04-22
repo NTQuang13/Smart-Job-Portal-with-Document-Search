@@ -1,33 +1,37 @@
 import express from "express";
-import pool from "../libs/db.js";
-import client from "../libs/elasticsearch.js";
-import verifyToken from "../middlewares/authMiddleware.js";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import { protectedRoute } from "../middlewares/authMiddleware.js";
+import { uploadCV, getCVs, getCVById } from "../controllers/cvController.js";
 
 const router = express.Router();
 
-// POST /api/cv
-router.post("/", verifyToken, async (req, res) => {
-    try {
-        const { skills, experience, education, location } = req.body;
-        const candidateId = req.user.id;
+// Đảm bảo thư mục upload tồn tại
+const uploadDir = "uploads/cvs/";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
-        // Lưu vào MySQL
-        await pool.query(
-            "INSERT INTO candidates (userId, skills, experience, education, location) VALUES (?, ?, ?, ?, ?)",
-            [candidateId, skills, experience, education, location]
-        );
-
-        // Index vào Elasticsearch
-        await client.index({
-            index: "candidates",
-            document: { id: candidateId, skills, experience, education, location }
-        });
-
-        res.status(201).json({ message: "CV đã được nộp thành công" });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Internal server error" });
-    }
+// Cấu hình Multer để lưu file
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname),
+    );
+  },
 });
+
+const upload = multer({ storage: storage });
+
+// Routes
+router.post("/upload", protectedRoute, upload.single("file"), uploadCV);
+router.get("/", protectedRoute, getCVs);
+router.get("/:id", protectedRoute, getCVById);
 
 export default router;

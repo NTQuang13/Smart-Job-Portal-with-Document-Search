@@ -3,14 +3,14 @@ import {
   applyJob,
   getApplications,
 } from "../controllers/applicationController.js";
-import verifyToken from "../middlewares/authMiddleware.js";
+import { protectedRoute } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
 // Route Nộp CV
-router.post("/", verifyToken, applyJob);
+router.post("/", protectedRoute, applyJob);
 
 // Route Lấy danh sách
-router.get("/", verifyToken, getApplications);
+router.get("/", protectedRoute, getApplications);
 
 export default router;

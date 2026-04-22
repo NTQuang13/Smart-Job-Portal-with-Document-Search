@@ -2,20 +2,11 @@ import pool from "../libs/db.js";
 
 export const getMe = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const [users] = await pool.query(
-      "SELECT id, name, email, role, createdAt FROM users WHERE id = ?",
-      [userId],
-    );
-
-    if (users.length === 0) {
-      return res.status(404).json({ message: "Not found" });
-    }
-
-    res.json({ user: users[0] });
+    const user = req.user;
+    return res.status(200).json(user);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    console.log("Lỗi khi gọi authMe", error);
+    return res.status(500).json({ message: "Lỗi hệ thống" });
   }
 };
 

@@ -3,6 +3,7 @@ import axios from "axios";
 // Khởi tạo một instance của axios
 const axiosClient = axios.create({
   baseURL: "http://localhost:3000/api",
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -36,21 +37,12 @@ axiosClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
-
-        if (!refreshToken) {
-          // Nếu không có cả refresh token -> Bắt user đăng nhập lại
-          localStorage.clear();
-          window.location.href = "/login";
-          return Promise.reject(error);
-        }
-
         // Gọi API cấp lại token mới
+        // cookie chứa refreshToken sẽ tự gửi kèm vì cấu hình withCredentials: true
         const res = await axios.post(
           "http://localhost:3000/api/auth/refresh-token",
-          {
-            refreshToken,
-          },
+          {},
+          { withCredentials: true }
         );
 
         // Cập nhật Access Token mới vào LocalStorage

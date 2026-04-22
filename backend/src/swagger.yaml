@@ -78,7 +78,7 @@ paths:
         "401":
           description: Unauthorized (Sai email/password)
 
-  /auth/refresh-token:
+  /auth/refresh:
     post:
       tags:
         - Auth

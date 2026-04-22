@@ -1,5 +1,5 @@
 import express from "express";
-import verifyToken from "../middlewares/authMiddleware.js";
+import { protectedRoute } from "../middlewares/authMiddleware.js";
 import { isRecruiter } from "../middlewares/roleMiddleware.js";
 import {
   createCompany,
@@ -8,8 +8,7 @@ import {
 
 const router = express.Router();
 
-// Route giờ chỉ còn 1 dòng ngắn gọn thế này!
-router.post("/", verifyToken, isRecruiter, createCompany);
+router.post("/", protectedRoute, isRecruiter, createCompany);
 router.get("/", getCompanies);
 
 export default router;

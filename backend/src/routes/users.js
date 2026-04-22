@@ -1,10 +1,10 @@
 import express from "express";
 import { getMe, getUserById } from "../controllers/userController.js";
-import verifyToken from "../middlewares/authMiddleware.js";
+import { protectedRoute } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/me", verifyToken, getMe);
-router.get("/:id", verifyToken, getUserById);
+router.get("/me", protectedRoute, getMe);
+router.get("/:id", protectedRoute, getUserById);
 
 export default router;

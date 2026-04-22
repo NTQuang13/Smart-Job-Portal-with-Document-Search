@@ -7,6 +7,7 @@ import { createCVTable } from "../models/CV.js";
 import { createCVExtractedTable } from "../models/CVExtracted.js";
 import { createApplicationTable } from "../models/Application.js";
 import { createBookmarkTable } from "../models/Bookmark.js";
+import { createSessionTable } from "../models/Session.js";
 
 async function setupDatabase() {
   let connection;
@@ -16,8 +17,8 @@ async function setupDatabase() {
     // 1. Tạo kết nối KHÔNG KHAI BÁO DATABASE NAME
     connection = await mysql.createConnection({
       host: process.env.DB_HOST || "localhost",
-      user: process.env.DB_USER || "root", // Điền username
-      password: process.env.DB_PASS || "182806", // Điền password
+      user: process.env.DB_USER || "", // Điền username
+      password: process.env.DB_PASS || "", // Điền password
     });
 
     const dbName = process.env.DB_NAME || "job_portal";
@@ -35,7 +36,6 @@ async function setupDatabase() {
     console.log("⏳ Đang khởi tạo các bảng...");
 
     // 4. Truyền biến connection này vào các hàm tạo bảng
-    // Biến connection này hoàn toàn có method .query() y hệt như biến pool
     await createUserTable(connection);
     await createCompanyTable(connection);
     await createJobTable(connection);
@@ -43,6 +43,7 @@ async function setupDatabase() {
     await createCVExtractedTable(connection);
     await createApplicationTable(connection);
     await createBookmarkTable(connection);
+    await createSessionTable(connection);
 
     console.log("🎉 KHỞI TẠO CƠ SỞ DỮ LIỆU HOÀN TẤT!");
     process.exit(0);

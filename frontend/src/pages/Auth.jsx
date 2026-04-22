@@ -21,16 +21,16 @@ function Auth() {
 
     try {
       if (isSignIn) {
-        // --- ĐĂNG NHẬP ---
         const res = await axios.post("http://localhost:3000/api/auth/signin", {
           email,
           password,
+        }, {
+          withCredentials: true
         });
 
         console.log("Dữ liệu signin trả về:", res.data); // Log ra để kiểm tra
 
         localStorage.setItem("accessToken", res.data.accessToken);
-        localStorage.setItem("refreshToken", res.data.refreshToken);
         navigate("/dashboard");
       } else {
         // --- ĐĂNG KÝ ---

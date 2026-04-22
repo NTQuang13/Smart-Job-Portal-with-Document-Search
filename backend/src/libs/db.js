@@ -3,8 +3,8 @@ import "dotenv/config";
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root", // Điền tên user mysql
-  password: process.env.DB_PASS || "182806", // Điền password
+  user: process.env.DB_USER || "", // Điền tên user mysql
+  password: process.env.DB_PASS || "", // Điền password
   database: process.env.DB_NAME || "job_portal",
   waitForConnections: true,
   connectionLimit: 10,
