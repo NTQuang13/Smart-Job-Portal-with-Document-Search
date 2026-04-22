@@ -15,13 +15,21 @@ Dưới đây là hướng dẫn chi tiết các bước để thiết lập và
 ### 1. Thiết lập Database (MySQL)
 
 1. Hãy đảm bảo bạn đã cài đặt và bật MySQL server.
-2. Mở thư mục `backend`, tạo một file tên là `.env` (bạn có thể copy từ `.env.example` nếu có) và cấu hình các thông số kết nối cơ sở dữ liệu:
+2. Mở thư mục `backend`, tạo một file tên là `.env` (bạn có thể copy từ `.env.example` nếu có) và cấu hình các thông số kết nối cơ sở dữ liệu và bảo mật:
    ```env
    DB_HOST=localhost
    DB_USER=root      # Thay bằng username MySQL của bạn
    DB_PASS=          # Thay bằng mật khẩu MySQL của bạn
    DB_NAME=job_portal
+   ACCESS_TOKEN_SECRET= # Secret key cho JWT (Xem hướng dẫn tạo bên dưới)
    ```
+
+   > **Mẹo:** Để tạo một chuỗi ngẫu nhiên an toàn cho `ACCESS_TOKEN_SECRET`, bạn có thể chạy lệnh sau trong terminal:
+   > ```bash
+   > node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   > ```
+   > _Sau đó copy chuỗi được in ra và gán vào biến `ACCESS_TOKEN_SECRET`._
+
    _(Lưu ý: Nếu không sử dụng file `.env`, hệ thống sẽ lấy tài khoản mặc định được code cứng trong `backend/src/libs/db.js` và `backend/src/libs/init-db.js`)._
 3. Mở terminal tại thư mục `backend`, chạy lệnh sau để cài đặt các thư viện cần thiết (bao gồm express, multer, bullmq, pdf2json, v.v.):
    ```bash
@@ -80,5 +88,5 @@ Hệ thống backend yêu cầu chạy song song server API và worker xử lý 
 
 Hệ thống cung cấp sẵn file `swagger.yaml` để tham khảo tài liệu API.
 
-- Bạn có thể cài đặt extension **OpenAPI (Swagger) Editor** trong VS Code hoặc sử dụng [Swagger Editor Online](https://editor.swagger.io/).
+- Bạn có thể cài đặt extension **OpenAPI (Swagger) Editor** trong VS Code hoặc sử dụng [Swagger Editor Online](http://localhost:3000/api-docs).
 - Mở hoặc paste nội dung file `swagger.yaml` vào để xem cấu trúc và test trực tiếp các API.
