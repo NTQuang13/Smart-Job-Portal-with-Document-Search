@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import AccountPage from "../pages/AccountPage";
 
 // Import ảnh
 import logoImage from "../assets/logo.png";
@@ -15,6 +16,17 @@ function Auth() {
   const [role, setRole] = useState("candidate");
 
   const navigate = useNavigate();
+  const location = useLocation(); // Bắt tín hiệu điều hướng
+
+  // 🟢 Bắt tín hiệu từ AccountModal truyền sang
+  useEffect(() => {
+    if (location.state && location.state.isSignUp) {
+      setIsSignIn(false); // Chuyển sang form Đăng ký
+      
+      // Xoá state để nếu user F5 lại trang thì không bị kẹt ở form đăng ký
+      window.history.replaceState({}, document.title); 
+    }
+  }, [location]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,7 +81,7 @@ function Auth() {
           err.response.data.message || JSON.stringify(err.response.data);
         alert(`Lỗi từ Server: ${errorMessage}`);
       } else if (err.request) {
-        // Lỗi không kết nối được tới server (Có thể do sai Port hoặc lỗi CORS)
+        // Lỗi không kết nối được tới server
         alert(
           "Lỗi kết nối: Không thể gọi tới Server. Hãy kiểm tra xem Server đã chạy chưa và có đúng cổng 3000 không.",
         );
@@ -208,8 +220,7 @@ function Auth() {
 
 export default Auth;
 
-// --- STYLES (Giữ nguyên không thay đổi) ---
-
+// --- STYLES ---
 const styles = {
   pageBackground: {
     display: "flex",
@@ -235,7 +246,8 @@ const styles = {
   },
   left: {
     width: "50%",
-    padding: "40px",
+    //padding: "40px",
+    padding: "0 40px 40px 0",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -248,13 +260,13 @@ const styles = {
   },
   header: {
     textAlign: "center",
-    marginBottom: "25px",
+    marginBottom: "10px",
   },
   brandContainer: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    marginBottom: "15px",
+    marginBottom: "10px",
   },
   logoImg: {
     width: "200px",
@@ -265,7 +277,7 @@ const styles = {
     marginBottom: "0px",
   },
   brandText: {
-    marginTop: "0px",
+    marginTop: "-60px",
     fontSize: "32px",
     fontWeight: "900",
     fontFamily: "'Arial Black', 'Impact', 'Inter', sans-serif",
@@ -289,14 +301,14 @@ const styles = {
     margin: 0,
   },
   formGroup: {
-    marginBottom: "16px",
+    marginBottom: "10px",
   },
   label: {
     display: "block",
     fontSize: "12px",
     fontWeight: "600",
     color: "#374151",
-    marginBottom: "6px",
+    marginBottom: "4px",
     textAlign: "left",
   },
   input: {
@@ -353,7 +365,8 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    padding: "20px",
+    //padding: "20px",
+    padding: "0 20px 20px 20px",
   },
   illustrationImg: {
     width: "80%",

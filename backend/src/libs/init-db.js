@@ -17,8 +17,8 @@ async function setupDatabase() {
     // 1. Tạo kết nối KHÔNG KHAI BÁO DATABASE NAME
     connection = await mysql.createConnection({
       host: process.env.DB_HOST || "localhost",
-      user: process.env.DB_USER || "", // Điền username
-      password: process.env.DB_PASS || "", // Điền password
+      user: process.env.DB_USER || "root", // Điền username
+      password: process.env.DB_PASS || "182806", // Điền password
     });
 
     const dbName = process.env.DB_NAME || "job_portal";
