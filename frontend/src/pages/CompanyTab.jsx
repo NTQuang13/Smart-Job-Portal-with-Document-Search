@@ -11,7 +11,7 @@ function CompanyTab() {
   // Lấy thông tin công ty hiện tại (nếu có)
   const fetchCompany = async () => {
     try {
-      // Đổi endpoint "/companies/me" theo đúng API backend của bạn
+      // endpoint "/companies/me" 
       const res = await axiosClient.get("/companies/me"); 
       if (res.data && (res.data.company || res.data)) {
         const compData = res.data.company || res.data;
