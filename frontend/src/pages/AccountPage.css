@@ -1,6 +1,6 @@
 /* AccountPage.css */
 
-/* --- TOPBAR & LOGO DISTANCE --- */
+/* --- TOPBAR & LOGO DISTANCE (GIỮ NGUYÊN) --- */
 .topbar {
     display: flex;
     justify-content: space-between;
@@ -60,19 +60,19 @@
     overflow: hidden;
 }
 
-/* --- SIDEBAR --- */
+/* --- SIDEBAR (GIỮ NGUYÊN) --- */
 .sidebar {
     width: 260px;
-    min-width: 260px; /* ✅ FIX */
+    min-width: 260px;
     background: white;
     border-right: 1px solid #e2e8f0;
-    transition: all 0.3s ease; /* ✅ FIX */
+    transition: all 0.3s ease;
     overflow: hidden;
 }
 
 .sidebar.closed { 
     width: 80px; 
-    min-width: 80px; /* ✅ FIX */
+    min-width: 80px;
 }
 
 .sidebar-title {
@@ -83,7 +83,6 @@
     text-align: center;
 }
 
-/* menu */
 .menu-item {
     display: flex;
     align-items: center;
@@ -95,12 +94,10 @@
     transition: 0.2s;
 }
 
-/* 👉 FIX icon center khi đóng */
 .sidebar.closed .menu-item {
     justify-content: center;
 }
 
-/* 👉 FIX text không bị tràn */
 .menu-text {
     transition: opacity 0.2s;
 }
@@ -110,7 +107,6 @@
     pointer-events: none;
 }
 
-/* active */
 .active-menu {
     background: #1a6bf2;
     color: white !important;
@@ -122,7 +118,6 @@
     padding: 30px;
     overflow-y: auto;
     overflow-x: hidden;
-    transition: all 0.3s ease; /* ✅ FIX MƯỢT */
 }
 
 .account-card {
@@ -132,46 +127,103 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.04);
 }
 
-/* layout profile */
-.profile-grid {
-    display: grid;
-    grid-template-columns: 1.6fr 1fr;
-    gap: 50px;
-    margin-top: 30px;
+/* --- ✅ FIX LỖI TRÀN: ÁP DỤNG CHO TẤT CẢ INPUT/TEXTAREA --- */
+input, 
+textarea, 
+select, 
+.form-input, 
+.search-input {
+    width: 100% !important;
+    box-sizing: border-box !important; /* Quan trọng nhất để ko lồi ra ngoài */
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.2s ease;
+    margin-top: 5px;
 }
 
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #1a6bf2;
+    box-shadow: 0 0 0 3px rgba(26,107,242,0.1);
+}
+
+/* --- ✅ PROFILE LAYOUT (CĂN CHỈNH LẠI) --- */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px; /* Cột trái form, cột phải avatar */
+    gap: 40px;
+    margin-top: 20px;
+}
+
+/* Cột avatar bên phải */
 .avatar-column {
     display: flex;
     flex-direction: column;
     align-items: center;
     border-left: 1px solid #f1f5f9;
-    padding-left: 50px;
+    padding-left: 40px;
 }
 
 .avatar-large-circle {
-    width: 130px;
-    height: 130px;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #1a6bf2, #4f8cff);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 50px;
-    font-weight: bold;
+    background: #e2e8f0;
+    overflow: hidden;
     margin-bottom: 20px;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.full-width { width: 100%; }
+.avatar-large-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
+/* --- FORM COMPONENTS --- */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.section-card {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid #e2e8f0;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #1e293b;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #475569;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* --- BUTTONS --- */
 .btn-save {
-    margin-top: 15px;
-    width: fit-content;
     background: #4b2bd9;
     color: white;
     border: none;
     border-radius: 12px;
     padding: 10px 30px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 .btn-change-avatar {
@@ -184,10 +236,9 @@
     font-weight: 600;
 }
 
-.placeholder-tab {
-    text-align: center;
-    padding: 100px;
-    color: #94a3b8;
+/* --- CÁC PHẦN KHÁC GIỮ NGUYÊN Tên Class --- */
+.password-form {
+    max-width: 500px;
 }
 
 .fade-in {
@@ -199,128 +250,7 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-.form-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #475569;
-    font-size: 14px;
-}
-
-.password-form {
-    max-width: 500px;
-}
-
 .loading-screen {
     padding: 50px;
     text-align: center;
-}
-
-/* icon profile */
-
-
-/* ===== SECTION CARD ===== */
-.section-card {
-    background: #f8fafc;
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 25px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-}
-h2 {
-    font-size: 26px;
-    font-weight: 800;
-    margin-bottom: 25px;
-    color: #1a6bf2;
-}
-
-.section-card h3 {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 18px;
-    color: #334155;
-}
-
-/* ===== CHECKBOX ===== */
-.checkbox-group {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 15px;
-  color: #1e293b;
-}
-
-.grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-}
-
-.textarea {
-  width: 100%;
-  min-height: 100px;
-  border-radius: 8px;
-  resize: vertical;
-  border: 1px solid #cbd5e1;
-  padding: 10px;
-}
-
-.checkbox {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.search-input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
-  outline: none;
-}
-input,
-textarea {
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-    background: #ffffff;
-    font-size: 14px;
-    color: #1e293b;
-    transition: all 0.2s ease;
-}
-
-/* placeholder */
-input::placeholder,
-textarea::placeholder {
-    color: #94a3b8;
-}
-
-/* focus đẹp hơn */
-input:focus,
-textarea:focus {
-    outline: none;
-    border-color: #1a6bf2;
-    box-shadow: 0 0 0 3px rgba(26,107,242,0.15);
-}
-input:hover,
-textarea:hover {
-    border-color: #cbd5f5;
-}
-
-/*css jobstab*/
-/* ===== QUILL EDITOR ===== */
-.ql-toolbar {
-  border-radius: 10px 10px 0 0;
-}
-
-.ql-container {
-  border-radius: 0 0 10px 10px;
-  font-size: 14px;
 }

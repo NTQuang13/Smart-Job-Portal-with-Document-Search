@@ -10,6 +10,7 @@ import ProfileTab from "./pages/ProfileTab";
 import PasswordTab from "./pages/PasswordTab";
 import CVTab from "./pages/CVTab";
 import JobsTab from "./pages/JobsTab";
+import CompanyTab from "./pages/CompanyTab";
 import AccountPage from "./pages/AccountPage";
 
 const ProtectedRoute = ({ children }) => {
@@ -77,6 +78,7 @@ function App() {
           <Route path="password" element={<PasswordTab />} />
           <Route path="cv" element={<CVTab />} />
           <Route path="jobs" element={<JobsTab />} />
+          <Route path="company" element={<CompanyTab />} />
         </Route>
 
       </Routes>

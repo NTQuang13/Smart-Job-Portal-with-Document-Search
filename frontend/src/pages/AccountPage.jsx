@@ -25,7 +25,7 @@ function AccountPage() {
     fetchUser();
   }, [navigate]);
 
-  // 👉 đóng popup khi click ra ngoài
+  // đóng popup khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = () => {
       setIsProfilePopupOpen(false);
@@ -143,14 +143,26 @@ function AccountPage() {
       <div className="main-layout">
         {/* SIDEBAR */}
         <aside className={`sidebar ${isSidebarOpen ? "" : "closed"}`}>
-          <nav className="sidebar-nav">
-
+          <div className="sidebar-title">
+            {isSidebarOpen ? "" : "⚙️"}
+          </div>
+          <nav>
             <div
               className={`menu-item ${isActive("profile") ? "active-menu" : ""}`}
               onClick={() => navigate("/account/profile")}
             >
               👤 {isSidebarOpen && "Hồ sơ cá nhân"}
             </div>
+
+            {/* THÊM MỤC CÔNG TY CHO NHÀ TUYỂN DỤNG */}
+            {user.role === "recruiter" && (
+              <div
+                className={`menu-item ${isActive("company") ? "active-menu" : ""}`}
+                onClick={() => navigate("/account/company")}
+              >
+                🏢 {isSidebarOpen && "Thông tin công ty"}
+              </div>
+            )}
 
             {user.role === "recruiter" ? (
               <div
